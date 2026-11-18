@@ -197,6 +197,35 @@ for name, s in check_cols.items():
         len(s)
     )
 
+# Late-October PushEvent coverage diagnostic
+
+push_daily = (
+    pd.to_datetime(pushes["created_at"], errors="coerce")
+    .dropna()
+    .dt.floor("D")
+    .value_counts()
+    .sort_index()
+)
+
+dates = pd.date_range("2026-10-15", "2026-11-11", freq="D")
+
+push_coverage = (
+    push_daily.reindex(dates, fill_value=0)
+    .rename("PushEvent count")
+    .to_frame()
+)
+
+display(push_coverage)
+
+ax = push_coverage.plot(
+    kind="bar",
+    figsize=(12, 4),
+    title="Daily PushEvent Records — Oct–Nov 2026"
+)
+
+ax.set_xlabel("Date (UTC)")
+ax.set_ylabel("Number of PushEvents")
+
 """# Step 3 — Define prediction cutoffs and create seven-day labels"""
 
 # Fixed development benchmark split. Final retraining is a separate step (Step 13).
